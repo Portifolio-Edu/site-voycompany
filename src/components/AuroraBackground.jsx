@@ -1,118 +1,108 @@
 import { useEffect, useRef } from 'react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
-/*
- * Aurora de fitas em Canvas 2D.
- * Substitui o shader WebGL original mantendo o visual de bandas fluidas,
- * sem o custo do Three.js. Tecnica: desenha em um canvas offscreen de
- * baixa resolucao e faz upscale, o que gera o blur suave de graca.
- * Sob prefers-reduced-motion renderiza um unico frame estatico.
- */
-
-const RIBBONS = [
-    { hue: 'rgba(0, 255, 170,', baseY: 0.30, amp: 0.10, freq: 1.6, speed: 0.06, width: 0.16, alpha: 0.55 },
-    { hue: 'rgba(46, 242, 197,', baseY: 0.42, amp: 0.14, freq: 1.1, speed: 0.045, width: 0.22, alpha: 0.38 },
-    { hue: 'rgba(0, 140, 255,', baseY: 0.58, amp: 0.12, freq: 1.9, speed: 0.075, width: 0.18, alpha: 0.30 },
-    { hue: 'rgba(120, 80, 255,', baseY: 0.72, amp: 0.08, freq: 1.3, speed: 0.05, width: 0.14, alpha: 0.18 },
-];
-
-const SCALE = 0.12; // resolucao do offscreen (12% da tela): blur natural no upscale
-
 export default function AuroraBackground() {
-    const canvasRef = useRef(null);
-    const prefersReducedMotion = usePrefersReducedMotion();
+  const containerRef = useRef(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-        const ctx = canvas.getContext('2d');
-        const off = document.createElement('canvas');
-        const octx = off.getContext('2d');
+    let disposed = false;
+    let cleanupFn = null;
 
-        let w = 0, h = 0, ow = 0, oh = 0;
-        let frameId = null;
-        let running = false;
+    // Lazy import: o three sai do chunk principal e carrega em paralelo,
+    // imperceptivel para um background e mantem o first paint leve.
+    import('three').then((THREE) => {
+      if (disposed) return;
 
-        const resize = () => {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-            ow = off.width = Math.max(96, Math.floor(w * SCALE));
-            oh = off.height = Math.max(64, Math.floor(h * SCALE));
-        };
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'low-power' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    container.appendChild(renderer.domElement);
 
-        const drawFrame = (t) => {
-            octx.clearRect(0, 0, ow, oh);
-            octx.globalCompositeOperation = 'lighter';
-
-            for (const r of RIBBONS) {
-                octx.beginPath();
-                octx.moveTo(0, oh);
-                for (let x = 0; x <= ow; x += 2) {
-                    const nx = x / ow;
-                    const y = oh * r.baseY
-                        + Math.sin(nx * Math.PI * r.freq + t * r.speed) * oh * r.amp
-                        + Math.sin(nx * Math.PI * r.freq * 2.7 + t * r.speed * 1.6) * oh * r.amp * 0.35;
-                    octx.lineTo(x, y);
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        iTime: { value: 0 },
+        iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+      },
+      vertexShader: `void main() { gl_Position = vec4(position, 1.0); }`,
+      fragmentShader: `
+                uniform float iTime;
+                uniform vec2 iResolution;
+                #define NUM_OCTAVES 3
+                float rand(vec2 n) { return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453); }
+                float noise(vec2 p) {
+                    vec2 ip = floor(p); vec2 u = fract(p); u = u*u*(3.0-2.0*u);
+                    float res = mix(mix(rand(ip), rand(ip + vec2(1.0, 0.0)), u.x), mix(rand(ip + vec2(0.0, 1.0)), rand(ip + vec2(1.0, 1.0)), u.x), u.y);
+                    return res * res;
                 }
-                octx.lineTo(ow, oh);
-                octx.closePath();
+                float fbm(vec2 x) {
+                    float v = 0.0; float a = 0.3; vec2 shift = vec2(100);
+                    mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
+                    for (int i = 0; i < NUM_OCTAVES; ++i) { v += a * noise(x); x = rot * x * 2.0 + shift; a *= 0.4; }
+                    return v;
+                }
+                void main() {
+                    vec2 shake = vec2(sin(iTime * 1.2) * 0.005, cos(iTime * 2.1) * 0.005);
+                    vec2 p = ((gl_FragCoord.xy + shake * iResolution.xy) - iResolution.xy * 0.5) / iResolution.y * mat2(6.0, -4.0, 4.0, 6.0);
+                    vec2 v; vec4 o = vec4(0.0); float f = 2.0 + fbm(p + vec2(iTime * 5.0, 0.0)) * 0.5;
+                    for (float i = 0.0; i < 25.0; i++) {
+                        v = p + cos(i * i + (iTime + p.x * 0.08) * 0.025 + i * vec2(13.0, 11.0)) * 3.5 + vec2(sin(iTime * 3.0 + i) * 0.003, cos(iTime * 3.5 - i) * 0.003);
+                        float tailNoise = fbm(v + vec2(iTime * 0.5, i)) * 0.3 * (1.0 - (i / 25.0));
+                        vec4 auroraColors = vec4(0.1 + 0.3 * sin(i * 0.2 + iTime * 0.4), 0.3 + 0.5 * cos(i * 0.3 + iTime * 0.5), 0.7 + 0.3 * sin(i * 0.4 + iTime * 0.3), 1.0);
+                        vec4 currentContribution = auroraColors * exp(sin(i * i + iTime * 0.8)) / length(max(v, vec2(v.x * f * 0.015, v.y * 1.5)));
+                        float thinnessFactor = smoothstep(0.0, 1.0, i / 25.0) * 0.6;
+                        o += currentContribution * (1.0 + tailNoise * 0.8) * thinnessFactor;
+                    }
+                    o = tanh(pow(o / 80.0, vec4(1.6)));
+                    gl_FragColor = o * 1.5;
+                }
+            `
+    });
 
-                const gradTop = oh * (r.baseY - r.width);
-                const grad = octx.createLinearGradient(0, gradTop, 0, oh * (r.baseY + r.width * 2));
-                grad.addColorStop(0, r.hue + '0)');
-                grad.addColorStop(0.45, r.hue + String(r.alpha) + ')');
-                grad.addColorStop(1, r.hue + '0)');
-                octx.fillStyle = grad;
-                octx.fill();
-            }
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
 
-            ctx.clearRect(0, 0, w, h);
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
-            ctx.drawImage(off, 0, 0, ow, oh, 0, 0, w, h);
-        };
+    let frameId;
+    const clock = new THREE.Clock();
+    const animate = () => {
+      frameId = requestAnimationFrame(animate);
+      material.uniforms.iTime.value = clock.getElapsedTime();
+      renderer.render(scene, camera);
+    };
+    if (prefersReducedMotion) {
+      material.uniforms.iTime.value = 8.0;
+      renderer.render(scene, camera); // frame unico estatico
+    } else {
+      animate();
+    }
 
-        const loop = (now) => {
-            frameId = requestAnimationFrame(loop);
-            drawFrame(now / 1000);
-        };
+    const handleResize = () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      material.uniforms.iResolution.value.set(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
 
-        const start = () => {
-            if (running || prefersReducedMotion) return;
-            running = true;
-            frameId = requestAnimationFrame(loop);
-        };
-        const stop = () => {
-            running = false;
-            if (frameId) cancelAnimationFrame(frameId);
-            frameId = null;
-        };
+    cleanupFn = () => {
+        cancelAnimationFrame(frameId);
+        window.removeEventListener('resize', handleResize);
+        if (container && renderer.domElement.parentNode === container) container.removeChild(renderer.domElement);
+        geometry.dispose();
+        material.dispose();
+        renderer.dispose();
+      };
+    });
 
-        const onVisibility = () => {
-            if (document.hidden) { stop(); } else { start(); }
-        };
+    return () => {
+      disposed = true;
+      if (cleanupFn) cleanupFn();
+    };
+  }, [prefersReducedMotion]);
 
-        resize();
-        window.addEventListener('resize', resize);
-        document.addEventListener('visibilitychange', onVisibility);
-
-        if (prefersReducedMotion) {
-            drawFrame(12); // frame estatico com as fitas visiveis
-        } else {
-            start();
-        }
-
-        return () => {
-            stop();
-            window.removeEventListener('resize', resize);
-            document.removeEventListener('visibilitychange', onVisibility);
-        };
-    }, [prefersReducedMotion]);
-
-    return (
-        <div className="aurora-container" aria-hidden="true">
-            <canvas ref={canvasRef} className="aurora-canvas" />
-        </div>
-    );
+  return <div ref={containerRef} className="bg-layer bg-aurora" aria-hidden="true" />;
 }

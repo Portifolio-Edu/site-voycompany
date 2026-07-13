@@ -56,7 +56,7 @@ export default function Footer() {
                 <div className="footer-social">
                     <h4>Redes Sociais</h4>
                     <div className="social-icons">
-                        <a href="https://instagram.com/voytrafego" target="_blank" rel="noopener noreferrer" aria-label="Instagram da VOY">
+                        <a href="https://www.instagram.com/voycompany/" target="_blank" rel="noopener noreferrer" aria-label="Instagram da VOY">
                             <Instagram size={20} />
                         </a>
                         <a href="https://linkedin.com/company/voytrafego" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn da VOY">

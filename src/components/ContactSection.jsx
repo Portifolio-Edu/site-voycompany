@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function ContactSection() {
     const gridRef = useRef(null);
     const prefersReducedMotion = usePrefersReducedMotion();
-    const whatsappLink = 'https://wa.me/5500000000000?text=Olá!%20Quero%20escalar%20meu%20faturamento%20com%20a%20VOY';
+    const whatsappLink = 'https://wa.me/555181951175';
 
     useEffect(() => {
         if (prefersReducedMotion) {

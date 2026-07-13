@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { TrendingUp, Users, DollarSign, Award } from 'lucide-react';
 import AnimatedText from './AnimatedText';
 import CountUp from './CountUp';

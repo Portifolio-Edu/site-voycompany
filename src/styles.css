@@ -1723,3 +1723,110 @@ a, button { cursor: pointer;
         justify-content: flex-start;
     }
 }
+
+/* ==========================================================================
+   ASTRONAUT SCENE (NO THREE.JS)
+   ========================================================================== */
+.astronaut-scene {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1; /* Above aurora, below content */
+    overflow: hidden;
+}
+
+.scene-asteroid {
+    position: absolute;
+    top: 20%;
+    left: -10%;
+    width: 40vw;
+    max-width: 500px;
+    opacity: 0.8;
+    filter: brightness(0.6);
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+    animation: floatAsteroid 20s ease-in-out infinite alternate;
+}
+
+.scene-astronaut {
+    position: absolute;
+    bottom: -10%;
+    right: -5%;
+    width: 45vw;
+    max-width: 600px;
+    opacity: 0.9;
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+    animation: floatAstronaut 15s ease-in-out infinite alternate;
+}
+
+@keyframes floatAsteroid {
+    0% { margin-top: 0; margin-left: 0; }
+    100% { margin-top: -30px; margin-left: 20px; }
+}
+
+@keyframes floatAstronaut {
+    0% { margin-bottom: 0; margin-right: 0; }
+    100% { margin-bottom: -40px; margin-right: 20px; }
+}
+
+/* ==========================================================================
+   AURORA BACKGROUND (CSS ONLY)
+   ========================================================================== */
+.aurora-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    background-color: var(--bg-primary);
+    overflow: hidden;
+}
+
+.aurora-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    mix-blend-mode: screen;
+    animation: auroraWave 20s infinite alternate linear;
+    will-change: transform, opacity;
+}
+
+.aurora-1 {
+    top: -10%;
+    left: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(0, 255, 128, 0.3) 0%, transparent 70%);
+    animation-delay: 0s;
+}
+
+.aurora-2 {
+    bottom: -20%;
+    right: -10%;
+    width: 70vw;
+    height: 70vw;
+    background: radial-gradient(circle, rgba(0, 128, 255, 0.3) 0%, transparent 70%);
+    animation-delay: -5s;
+}
+
+.aurora-3 {
+    top: 30%;
+    left: 20%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, rgba(128, 0, 255, 0.2) 0%, transparent 70%);
+    animation-delay: -10s;
+}
+
+@keyframes auroraWave {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+    50% { transform: scale(1.2) translate(10vw, -10vh); opacity: 0.6; }
+    100% { transform: scale(0.9) translate(-5vw, 5vh); opacity: 0.4; }
+}
+

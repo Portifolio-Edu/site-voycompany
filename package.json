@@ -1,5 +1,5 @@
 {
-  "name": "voy-site",
+  "name": "site-voycompany",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,17 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "three": "^0.170.0",
-    "framer-motion": "^11.15.0",
-    "lucide-react": "^0.468.0",
     "gsap": "^3.12.7",
     "lenis": "^1.1.18",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "split-type": "^0.3.4"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "sharp": "^0.35.3",
     "vite": "^6.0.5"
   }
 }

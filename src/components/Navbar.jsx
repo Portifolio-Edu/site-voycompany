@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import { Menu, X } from 'lucide-react';
 import { useLenisScroll } from './SmoothScroll';
 
@@ -7,12 +7,33 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
     const lenisRef = useLenisScroll();
+    const navRef = useRef(null);
+    const mobileMenuRef = useRef(null);
 
     useEffect(() => {
+        // Initial entrance animation
+        gsap.fromTo(navRef.current, 
+            { y: -80, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+        );
+
         const handleScroll = () => setScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    useEffect(() => {
+        if (mobileOpen) {
+            gsap.fromTo(mobileMenuRef.current,
+                { height: 0, opacity: 0 },
+                { height: 'auto', opacity: 1, duration: 0.3, ease: "power2.out" }
+            );
+        } else if (mobileMenuRef.current) {
+            gsap.to(mobileMenuRef.current,
+                { height: 0, opacity: 0, duration: 0.3, ease: "power2.in" }
+            );
+        }
+    }, [mobileOpen]);
 
     const links = [
         { label: 'Início', href: '#hero' },
@@ -32,16 +53,14 @@ export default function Navbar() {
     };
 
     return (
-        <motion.nav
+        <header
+            ref={navRef}
             className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
-            initial={{ y: -80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
             <div className="navbar-inner">
-                <img src="/2 VOY COMPANY.png" alt="VOY Logo" className="navbar-logo" />
+                <img src="/2-voy-company.webp" alt="VOY Logo" className="navbar-logo" />
 
-                <div className="navbar-links">
+                <nav className="navbar-links" aria-label="Navegação principal">
                     {links.map((link) => (
                         <button key={link.href} onClick={() => scrollTo(link.href)} className="navbar-link">
                             {link.label}
@@ -50,37 +69,33 @@ export default function Navbar() {
                     <button onClick={() => scrollTo('#contato')} className="navbar-cta">
                         Falar com a VOY
                     </button>
-                </div>
+                </nav>
 
                 <button
                     className="navbar-hamburger"
                     onClick={() => setMobileOpen(!mobileOpen)}
+                    aria-expanded={mobileOpen}
                     aria-label="Abrir menu"
                 >
                     {mobileOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
             </div>
 
-            <AnimatePresence>
-                {mobileOpen && (
-                    <motion.div
-                        className="navbar-mobile"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                        {links.map((link) => (
-                            <button key={link.href} onClick={() => scrollTo(link.href)} className="navbar-mobile-link">
-                                {link.label}
-                            </button>
-                        ))}
-                        <button onClick={() => scrollTo('#contato')} className="navbar-mobile-cta">
-                            Falar com a VOY
-                        </button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.nav>
+            <div 
+                className="navbar-mobile" 
+                ref={mobileMenuRef}
+                style={{ overflow: 'hidden', height: 0, opacity: 0 }}
+                aria-hidden={!mobileOpen}
+            >
+                {links.map((link) => (
+                    <button key={link.href} onClick={() => scrollTo(link.href)} className="navbar-mobile-link">
+                        {link.label}
+                    </button>
+                ))}
+                <button onClick={() => scrollTo('#contato')} className="navbar-mobile-cta">
+                    Falar com a VOY
+                </button>
+            </div>
+        </header>
     );
 }

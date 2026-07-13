@@ -48,6 +48,11 @@ export default function HeroSection() {
                 { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
                 '-=0.4'
             );
+            // Saida cinematografica: o hero cede ao scroll com profundidade
+            gsap.to('.hero-title', {
+                yPercent: -22, opacity: 0.1, ease: 'none',
+                scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: 'bottom 25%', scrub: true }
+            });
         }, sectionRef);
 
         return () => ctx.revert();

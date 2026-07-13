@@ -60,82 +60,60 @@ const timelineSteps = [
 
 export default function EcosystemTimeline() {
     const containerRef = useRef(null);
-    const lineRef = useRef(null);
     const prefersReducedMotion = usePrefersReducedMotion();
+
+    const manifesto = "Não entregamos apenas uma peça audiovisual. Construímos a infraestrutura completa para que o seu filme publicitário se transforme em uma máquina de aquisição previsível e operando em piloto automático.";
 
     useEffect(() => {
         if (prefersReducedMotion) {
             gsap.set('.timeline-header', { opacity: 1, y: 0 });
-            gsap.set(lineRef.current, { height: '100%' });
-            gsap.set('.timeline-node', { backgroundColor: "var(--accent)", borderColor: "var(--accent)" });
-            gsap.set('.timeline-card', { opacity: 1, x: 0, y: 0 });
+            gsap.set('.fill-word', { opacity: 1 });
+            gsap.set('.stack-card', { scale: 1, y: 0, filter: 'none', opacity: 1 });
             return;
         }
 
         const ctx = gsap.context(() => {
-            // Header animation
             gsap.fromTo('.timeline-header',
                 { opacity: 0, y: 30 },
                 {
                     opacity: 1, y: 0, duration: 0.8,
-                    scrollTrigger: {
-                        trigger: containerRef.current,
-                        start: 'top 80%',
-                    }
+                    scrollTrigger: { trigger: containerRef.current, start: 'top 80%' }
                 }
             );
 
-            // Animate the main central line
-            gsap.fromTo(lineRef.current, 
-                { height: "0%" },
+            // Manifesto: palavras preenchem conforme o scroll atravessa o bloco
+            gsap.fromTo('.fill-word',
+                { opacity: 0.13 },
                 {
-                    height: "100%",
-                    ease: "none",
+                    opacity: 1,
+                    ease: 'none',
+                    stagger: 0.4,
                     scrollTrigger: {
-                        trigger: containerRef.current,
-                        start: "top 60%",
-                        end: "bottom 70%",
-                        scrub: 1,
+                        trigger: '.section-desc',
+                        start: 'top 78%',
+                        end: 'bottom 42%',
+                        scrub: true,
                     }
                 }
             );
 
-            // Animate nodes and cards individually
-            const items = gsap.utils.toArray('.timeline-item');
-            
-            items.forEach((item) => {
-                const node = item.querySelector('.timeline-node');
-                const card = item.querySelector('.timeline-card');
-                
-                // Node lights up
-                gsap.to(node, {
-                    backgroundColor: "var(--accent)",
-                    boxShadow: "0 0 20px rgba(0, 255, 204, 0.6)",
-                    borderColor: "var(--accent)",
+            // Sticky stack: card que sai cede o palco escalando e escurecendo
+            const cards = gsap.utils.toArray('.stack-card');
+            cards.forEach((card, i) => {
+                if (i === cards.length - 1) return;
+                gsap.to(card, {
+                    scale: 0.92,
+                    yPercent: -3,
+                    filter: 'brightness(0.4)',
+                    ease: 'none',
                     scrollTrigger: {
-                        trigger: item,
-                        start: "top 60%",
-                        end: "top 40%",
+                        trigger: cards[i + 1],
+                        start: 'top bottom',
+                        end: 'top 15%',
                         scrub: true,
                     }
                 });
-
-                const isLeft = item.classList.contains('timeline-left');
-                const xOffset = isLeft ? -50 : 50;
-
-                // Card slides in
-                gsap.fromTo(card,
-                    { opacity: 0, x: xOffset, y: 20 },
-                    {
-                        opacity: 1, x: 0, y: 0, duration: 0.6,
-                        scrollTrigger: {
-                            trigger: item,
-                            start: "top 75%",
-                        }
-                    }
-                );
             });
-
         }, containerRef);
 
         return () => ctx.revert();
@@ -147,30 +125,18 @@ export default function EcosystemTimeline() {
                 <span className="section-subtitle">O Ecossistema Voy</span>
                 <h2 className="section-title">Da Captação à Escala</h2>
                 <p className="section-desc">
-                    Não entregamos apenas uma peça audiovisual. Construímos a infraestrutura completa para que o seu filme publicitário se transforme em uma máquina de aquisição previsível e operando em piloto automático.
+                    {manifesto.split(' ').map((w, i) => (
+                        <span key={i}><span className="fill-word">{w}</span>{' '}</span>
+                    ))}
                 </p>
             </div>
 
-            <div className="timeline-wrapper">
-                {/* Background line track */}
-                <div className="timeline-line-bg"></div>
-                {/* Foreground animated line */}
-                <div className="timeline-line-active" ref={lineRef}></div>
-
-                {timelineSteps.map((step, index) => {
+            <div className="stack-wrap">
+                {timelineSteps.map((step) => {
                     const Icon = step.icon;
-                    const isLeft = index % 2 === 0;
-
                     return (
-                        <div key={step.id} className={`timeline-item ${isLeft ? 'timeline-left' : 'timeline-right'}`}>
-                            
-                            {/* The dot/node on the central line */}
-                            <div className="timeline-node">
-                                <div className="timeline-node-inner"></div>
-                            </div>
-
-                            <div className="timeline-card">
-                                <div className="timeline-card-glow"></div>
+                            <div key={step.id} className="stack-card">
+                                <span className="stack-ghost-number" aria-hidden="true">{String(step.id).padStart(2, '0')}</span>
                                 <div className="timeline-card-content">
                                     <div className="timeline-icon-wrap">
                                         <Icon className="timeline-icon" strokeWidth={1.5} />
@@ -178,16 +144,10 @@ export default function EcosystemTimeline() {
                                     <h3 className="timeline-step-title">
                                         <span className="step-number">Passo {step.id}:</span> {step.title}
                                     </h3>
-                                    <p className="timeline-step-desc">
-                                        {step.description}
-                                    </p>
-                                    <p className="timeline-step-transition">
-                                        {step.transition}
-                                    </p>
+                                    <p className="timeline-step-desc">{step.description}</p>
+                                    <p className="timeline-step-transition">{step.transition}</p>
                                 </div>
                             </div>
-
-                        </div>
                     );
                 })}
             </div>

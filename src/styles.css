@@ -1521,7 +1521,6 @@ a, button { cursor: pointer;
 .logo-sprite {
     width: 160px;
     height: 75px;
-    background-image: url('/logoempresasqueconfiam.png');
     background-size: 500% 200%;
     background-repeat: no-repeat;
     opacity: 0.85;
@@ -1828,5 +1827,17 @@ a, button { cursor: pointer;
     0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
     50% { transform: scale(1.2) translate(10vw, -10vh); opacity: 0.6; }
     100% { transform: scale(0.9) translate(-5vw, 5vh); opacity: 0.4; }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY
+   ========================================================================== */
+a:focus-visible, 
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 4px;
 }
 

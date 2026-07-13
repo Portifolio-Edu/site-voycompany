@@ -37,7 +37,7 @@ export default function App() {
             <AstronautScene />
 
             {/* CAMADA 2: Conteúdo do site rolando na frente de tudo */}
-            <div className="content-wrapper">
+            <main className="content-wrapper">
                 <Navbar />
                 <HeroSection />
                 <ClientsSection />
@@ -48,7 +48,7 @@ export default function App() {
                 <div className="section-divider" />
                 <FinalCTA />
                 <Footer />
-            </div>
+            </main>
         </SmoothScroll>
     );
 }

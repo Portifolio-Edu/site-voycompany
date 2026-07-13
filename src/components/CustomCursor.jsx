@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export default function CustomCursor() {
     const dotRef = useRef(null);
     const ringRef = useRef(null);
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     useEffect(() => {
+        if (prefersReducedMotion) return;
+
         const dot = dotRef.current;
         const ring = ringRef.current;
         if (!dot || !ring) return;
@@ -50,7 +54,9 @@ export default function CustomCursor() {
             document.removeEventListener('mouseover', handleMouseOver);
             document.removeEventListener('mouseout', handleMouseOut);
         };
-    }, []);
+    }, [prefersReducedMotion]);
+
+    if (prefersReducedMotion) return null;
 
     return (
         <>

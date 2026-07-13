@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,8 +20,14 @@ const logos = [
 
 export default function ClientsSection() {
     const sectionRef = useRef(null);
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     useEffect(() => {
+        if (prefersReducedMotion) {
+            gsap.set('.section-label', { opacity: 1, y: 0 });
+            return;
+        }
+
         const ctx = gsap.context(() => {
             gsap.fromTo('.section-label',
                 { opacity: 0, y: 20 },
@@ -34,7 +41,7 @@ export default function ClientsSection() {
             );
         }, sectionRef);
         return () => ctx.revert();
-    }, []);
+    }, [prefersReducedMotion]);
 
     return (
         <section className="clients-section" ref={sectionRef}>

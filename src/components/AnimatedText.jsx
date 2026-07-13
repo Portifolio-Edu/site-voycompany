@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,8 +24,11 @@ export default function AnimatedText({
     staggerAmount = 0.04,
 }) {
     const ref = useRef(null);
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     useEffect(() => {
+        if (prefersReducedMotion) return;
+
         const el = ref.current;
         if (!el) return;
 
@@ -71,7 +75,7 @@ export default function AnimatedText({
                 split.revert();
             };
         });
-    }, [splitBy, trigger, delay, staggerAmount]);
+    }, [splitBy, trigger, delay, staggerAmount, prefersReducedMotion]);
 
     return (
         <Tag

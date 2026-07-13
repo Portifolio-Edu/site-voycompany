@@ -2,12 +2,14 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import MagneticButton from './MagneticButton';
 import { useLenisScroll } from './SmoothScroll';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export default function HeroSection() {
     const sectionRef = useRef(null);
     const subtitleRef = useRef(null);
     const btnRef = useRef(null);
     const lenisRef = useLenisScroll();
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     const lines = [
         { words: ['A', 'Voy', 'sempre', 'soube', 'criar.'] },
@@ -15,6 +17,11 @@ export default function HeroSection() {
     ];
 
     useEffect(() => {
+        if (prefersReducedMotion) {
+            gsap.set([sectionRef.current.querySelectorAll('.hero-word'), subtitleRef.current, btnRef.current], { opacity: 1, y: 0 });
+            return;
+        }
+
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({ delay: 0.3 });
 
@@ -44,7 +51,7 @@ export default function HeroSection() {
         }, sectionRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [prefersReducedMotion]);
 
     const scrollToContact = () => {
         const el = document.querySelector('#contato');

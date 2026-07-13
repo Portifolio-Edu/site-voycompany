@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { Menu, X } from 'lucide-react';
 import { useLenisScroll } from './SmoothScroll';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -9,13 +10,18 @@ export default function Navbar() {
     const lenisRef = useLenisScroll();
     const navRef = useRef(null);
     const mobileMenuRef = useRef(null);
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     useEffect(() => {
         // Initial entrance animation
-        gsap.fromTo(navRef.current, 
-            { y: -80, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
-        );
+        if (!prefersReducedMotion) {
+            gsap.fromTo(navRef.current, 
+                { y: -80, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+            );
+        } else {
+            gsap.set(navRef.current, { y: 0, opacity: 1 });
+        }
 
         const handleScroll = () => setScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
@@ -23,6 +29,15 @@ export default function Navbar() {
     }, []);
 
     useEffect(() => {
+        if (prefersReducedMotion) {
+            if (mobileOpen) {
+                gsap.set(mobileMenuRef.current, { height: 'auto', opacity: 1 });
+            } else {
+                gsap.set(mobileMenuRef.current, { height: 0, opacity: 0 });
+            }
+            return;
+        }
+
         if (mobileOpen) {
             gsap.fromTo(mobileMenuRef.current,
                 { height: 0, opacity: 0 },
@@ -33,7 +48,7 @@ export default function Navbar() {
                 { height: 0, opacity: 0, duration: 0.3, ease: "power2.in" }
             );
         }
-    }, [mobileOpen]);
+    }, [mobileOpen, prefersReducedMotion]);
 
     const links = [
         { label: 'Início', href: '#hero' },

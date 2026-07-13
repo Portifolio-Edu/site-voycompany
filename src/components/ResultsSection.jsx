@@ -16,8 +16,11 @@ const stats = [
 
 export default function ResultsSection() {
     const gridRef = useRef(null);
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     useEffect(() => {
+        if (prefersReducedMotion) return;
+
         const ctx = gsap.context(() => {
             const cards = gridRef.current.querySelectorAll('.stat-card');
 
@@ -40,7 +43,7 @@ export default function ResultsSection() {
         }, gridRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [prefersReducedMotion]);
 
     return (
         <section className="results-section" id="resultados">

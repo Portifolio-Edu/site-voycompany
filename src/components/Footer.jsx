@@ -2,13 +2,20 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Instagram, Linkedin } from 'lucide-react';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Footer() {
     const footerRef = useRef(null);
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     useEffect(() => {
+        if (prefersReducedMotion) {
+            gsap.set('.footer-inner > *', { opacity: 1, y: 0 });
+            return;
+        }
+
         const ctx = gsap.context(() => {
             gsap.fromTo('.footer-inner > *',
                 { opacity: 0, y: 30 },
@@ -28,7 +35,7 @@ export default function Footer() {
         }, footerRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [prefersReducedMotion]);
 
     return (
         <footer className="site-footer" ref={footerRef}>

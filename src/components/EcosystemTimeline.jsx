@@ -60,8 +60,17 @@ const timelineSteps = [
 export default function EcosystemTimeline() {
     const containerRef = useRef(null);
     const lineRef = useRef(null);
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     useEffect(() => {
+        if (prefersReducedMotion) {
+            gsap.set('.timeline-header', { opacity: 1, y: 0 });
+            gsap.set(lineRef.current, { height: '100%' });
+            gsap.set('.timeline-node', { backgroundColor: "var(--accent)", borderColor: "var(--accent)" });
+            gsap.set('.timeline-card', { opacity: 1, x: 0, y: 0 });
+            return;
+        }
+
         const ctx = gsap.context(() => {
             // Header animation
             gsap.fromTo('.timeline-header',
@@ -129,7 +138,7 @@ export default function EcosystemTimeline() {
         }, containerRef);
 
         return () => ctx.revert();
-    }, []);
+    }, [prefersReducedMotion]);
 
     return (
         <section className="timeline-section" ref={containerRef} id="ecossistema">

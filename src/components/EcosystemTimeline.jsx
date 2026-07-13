@@ -107,6 +107,8 @@ export default function EcosystemTimeline() {
                 const node = item.querySelector('.timeline-node');
                 const card = item.querySelector('.timeline-card');
                 
+                if (!node || !card) return;
+
                 // Node lights up
                 gsap.to(node, {
                     backgroundColor: "var(--accent)",

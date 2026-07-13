@@ -69,10 +69,9 @@ export default function AuroraBackground() {
     scene.add(mesh);
 
     let frameId;
-    const clock = new THREE.Clock();
     const animate = () => {
       frameId = requestAnimationFrame(animate);
-      material.uniforms.iTime.value = clock.getElapsedTime();
+      material.uniforms.iTime.value = performance.now() / 1000;
       renderer.render(scene, camera);
     };
     if (prefersReducedMotion) {

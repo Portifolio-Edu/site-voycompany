@@ -10,7 +10,6 @@ import {
     Bot, 
     LineChart 
 } from 'lucide-react';
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 

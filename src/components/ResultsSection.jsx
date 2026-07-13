@@ -5,7 +5,6 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { TrendingUp, Users, DollarSign, Award } from 'lucide-react';
 import AnimatedText from './AnimatedText';
 import CountUp from './CountUp';
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 

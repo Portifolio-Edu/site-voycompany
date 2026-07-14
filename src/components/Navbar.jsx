@@ -73,7 +73,7 @@ export default function Navbar() {
             className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
         >
             <div className="navbar-inner">
-                <img src="/logovoycompany.webp" alt="VOY Logo" className="navbar-logo" />
+                <img src="/rocket.png" alt="VOY Logo" className="navbar-logo" />
 
                 <nav className="navbar-links" aria-label="Navegação principal">
                     {links.map((link) => (

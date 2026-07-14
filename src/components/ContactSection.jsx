@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function ContactSection() {
     const gridRef = useRef(null);
     const prefersReducedMotion = usePrefersReducedMotion();
-    const whatsappLink = 'https://wa.me/555181951175';
+    const whatsappLink = 'https://wa.me/5551981951175';
 
     useEffect(() => {
         if (prefersReducedMotion) {
@@ -46,10 +46,10 @@ export default function ContactSection() {
             <div className="section-header">
                 <span className="section-tag">Contato</span>
                 <AnimatedText as="h2">
-                    Pronto para escalar?
+                    Pronto para decolar?
                 </AnimatedText>
                 <AnimatedText as="p" className="section-subtitle" delay={0.2}>
-                    Fale agora com um dos nossos estrategistas e descubra quanto sua empresa pode faturar a mais.
+                    Converse com um dos nossos estrategistas e descubra como o Ecossistema VOY pode transformar atenção em oportunidades, oportunidades em crescimento e crescimento em resultados consistentes para o seu negócio.
                 </AnimatedText>
             </div>
 
@@ -78,7 +78,7 @@ export default function ContactSection() {
                 <div className="contact-card">
                     <MapPin size={36} />
                     <h3>Localização</h3>
-                    <p>Atendimento 100% remoto em todo Brasil</p>
+                    <p>Atendimento 100% remoto em todo Mundo</p>
                 </div>
             </div>
         </section>

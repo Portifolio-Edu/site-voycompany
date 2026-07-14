@@ -148,10 +148,10 @@ export default function EcosystemTimeline() {
     return (
         <section className="timeline-section" ref={containerRef} id="ecossistema">
             <div className="timeline-header">
-                <span className="section-subtitle">O Ecossistema Voy</span>
-                <h2 className="section-title">Da Captação à Escala</h2>
+                <span className="section-subtitle">O Ecossistema VOY</span>
+                <h2 className="section-title">Aquecendo os Motores</h2>
                 <p className="section-desc">
-                    Não entregamos apenas uma peça audiovisual. Construímos a infraestrutura completa para que o seu filme publicitário se transforme em uma máquina de aquisição previsível e operando em piloto automático.
+                    Não produzimos apenas conteúdos.<br/><br/>Construímos uma operação completa onde estratégia, comunicação, tecnologia e performance trabalham conectadas para gerar crescimento de forma consistente.<br/><br/>Cada etapa foi pensada para transformar atenção em oportunidades, oportunidades em relacionamento e relacionamento em resultados.
                 </p>
             </div>
 

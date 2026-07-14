@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Instagram, Linkedin } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -59,8 +59,8 @@ export default function Footer() {
                         <a href="https://www.instagram.com/voycompany/" target="_blank" rel="noopener noreferrer" aria-label="Instagram da VOY">
                             <Instagram size={20} />
                         </a>
-                        <a href="https://linkedin.com/company/voytrafego" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn da VOY">
-                            <Linkedin size={20} />
+                        <a href="https://www.instagram.com/produtoravoy" target="_blank" rel="noopener noreferrer" aria-label="Instagram da Produtora VOY">
+                            <Instagram size={20} />
                         </a>
                     </div>
                 </div>

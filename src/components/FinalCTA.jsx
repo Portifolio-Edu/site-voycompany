@@ -19,10 +19,10 @@ export default function FinalCTA() {
             <div className="final-cta-glow" aria-hidden="true" />
             <div className="final-cta-content">
                 <AnimatedText as="h2" className="final-cta-title" splitBy="words">
-                    Pare de queimar dinheiro com tráfego que não converte.
+                    Sua empresa não precisa de mais ferramentas.
                 </AnimatedText>
                 <AnimatedText as="p" className="final-cta-subtitle" splitBy="words" delay={0.3}>
-                    Sua empresa merece uma estratégia que gere lucro real — não métricas de vaidade.
+                    Precisa de uma estratégia onde tudo trabalhe na mesma direção.
                 </AnimatedText>
                 <MagneticButton
                     className="cta-btn cta-btn-glow"

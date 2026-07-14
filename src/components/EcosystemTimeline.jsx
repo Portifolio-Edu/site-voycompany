@@ -127,12 +127,14 @@ export default function EcosystemTimeline() {
 
                 // Card slides in
                 gsap.fromTo(card,
-                    { opacity: 0, x: xOffset, y: 20 },
+                    { opacity: 0, x: xOffset, y: 30 },
                     {
-                        opacity: 1, x: 0, y: 0, duration: 0.6,
+                        opacity: 1, x: 0, y: 0, 
+                        duration: 0.85, 
+                        ease: 'power3.out',
                         scrollTrigger: {
                             trigger: item,
-                            start: "top 75%",
+                            start: "top 80%",
                         }
                     }
                 );

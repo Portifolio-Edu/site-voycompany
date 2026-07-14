@@ -150,7 +150,7 @@ export default function EcosystemTimeline() {
             <div className="timeline-header">
                 <span className="section-subtitle">O Ecossistema VOY</span>
                 <h2 className="section-title">Aquecendo os Motores</h2>
-                <p className="section-desc">
+                <p className="section-desc" style={{ maxWidth: '800px', margin: '0 auto' }}>
                     Não produzimos apenas conteúdos.<br/><br/>Construímos uma operação completa onde estratégia, comunicação, tecnologia e performance trabalham conectadas para gerar crescimento de forma consistente.<br/><br/>Cada etapa foi pensada para transformar atenção em oportunidades, oportunidades em relacionamento e relacionamento em resultados.
                 </p>
             </div>

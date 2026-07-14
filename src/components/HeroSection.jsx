@@ -97,7 +97,7 @@ export default function HeroSection() {
             <div ref={btnRef} style={{ opacity: 0 }}>
                 <MagneticButton
                     className="cta-btn cta-btn-glow"
-                    onClick={scrollToContact}
+                    onClick={() => window.open('https://wa.me/555181951175', '_blank')}
                     aria-label="Falar com a VOY — ir para contato"
                 >
                     Falar com a VOY

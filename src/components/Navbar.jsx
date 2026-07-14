@@ -81,7 +81,7 @@ export default function Navbar() {
                             {link.label}
                         </button>
                     ))}
-                    <button onClick={() => scrollTo('#contato')} className="navbar-cta">
+                    <button onClick={() => window.open('https://wa.me/555181951175', '_blank')} className="navbar-cta">
                         Falar com a VOY
                     </button>
                 </nav>
@@ -107,7 +107,7 @@ export default function Navbar() {
                         {link.label}
                     </button>
                 ))}
-                <button onClick={() => scrollTo('#contato')} className="navbar-mobile-cta">
+                <button onClick={() => window.open('https://wa.me/555181951175', '_blank')} className="navbar-mobile-cta">
                     Falar com a VOY
                 </button>
             </div>

@@ -24,21 +24,11 @@ export default function ClientsSection() {
 
     useEffect(() => {
         if (prefersReducedMotion) {
-            gsap.set('.section-label', { opacity: 1, y: 0 });
             return;
         }
 
         const ctx = gsap.context(() => {
-            gsap.fromTo('.section-label',
-                { opacity: 0, y: 20 },
-                {
-                    opacity: 1, y: 0, duration: 0.6,
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: 'top 85%',
-                    },
-                }
-            );
+            // Nenhum GSAP alvo na inicialização se não houver mais .section-label
         }, sectionRef);
         return () => ctx.revert();
     }, [prefersReducedMotion]);

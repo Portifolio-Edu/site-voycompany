@@ -26,7 +26,7 @@ export default function FinalCTA() {
                 </AnimatedText>
                 <MagneticButton
                     className="cta-btn cta-btn-glow"
-                    onClick={scrollToContact}
+                    onClick={() => window.open('https://wa.me/555181951175', '_blank')}
                     aria-label="Quero resultados reais — ir para contato"
                 >
                     Quero Resultados Reais

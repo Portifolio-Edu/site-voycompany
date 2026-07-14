@@ -41,7 +41,7 @@ export default function Footer() {
         <footer className="site-footer" ref={footerRef}>
             <div className="footer-inner">
                 <div className="footer-brand">
-                    <img src="/2-voy-company.webp" alt="VOY Logo" className="footer-logo" loading="lazy" />
+                    <img src="/logovoycompany.webp" alt="VOY Logo" className="footer-logo" loading="lazy" />
                     <p>Tráfego pago de alta performance.<br />Resultados reais, sem métricas de vaidade.</p>
                 </div>
 

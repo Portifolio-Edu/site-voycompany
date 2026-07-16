@@ -67,12 +67,12 @@ export default function ContactSection() {
                 </a>
 
                 <a
-                    href="mailto:contato@voytrafego.com"
+                    href="mailto:contato@voycompany.io"
                     className="contact-card"
                 >
                     <Mail size={36} />
                     <h3>E-mail</h3>
-                    <p>contato@voytrafego.com</p>
+                    <p>contato@voycompany.io</p>
                 </a>
 
                 <div className="contact-card">

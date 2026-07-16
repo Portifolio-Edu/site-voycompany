@@ -523,7 +523,6 @@ a, button { cursor: pointer;
     height: 60px;
     width: auto;
     opacity: 0.9;
-    mix-blend-mode: screen;
     transition: opacity var(--transition-med);
     padding-right: 40px; /* same as gap to make seamless duplicate */
 }

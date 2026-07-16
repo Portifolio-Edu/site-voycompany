@@ -15,6 +15,7 @@ import ResultsSection from './components/ResultsSection';
 import ContactSection from './components/ContactSection';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
+import ChatWidget from './components/ChatWidget';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,6 +50,8 @@ export default function App() {
                 <FinalCTA />
                 <Footer />
             </main>
+
+            <ChatWidget />
         </SmoothScroll>
     );
 }

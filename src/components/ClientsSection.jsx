@@ -5,17 +5,13 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const logos = [
-    { id: 1, px: 0, py: 0 },
-    { id: 2, px: 25, py: 100 },
-    { id: 3, px: 50, py: 100 },
-    { id: 4, px: 100, py: 0 },
-    { id: 5, px: 0, py: 100 },
-    { id: 6, px: 25, py: 0 },
-    { id: 7, px: 75, py: 0 },
-    { id: 8, px: 50, py: 0 }, // iGUi instead of Budweiser
-    { id: 9, px: 100, py: 100 },
-    { id: 10, px: 75, py: 100 },
+// Clientes reais da Voy (mesma prova social citada no Hero: "mesmo padrao
+// que ja atende Globo, Dell e Cyrela"). Lista em texto por garantia de
+// funcionamento; trocar por <img> usando .marquee-track img (ja existe no
+// CSS) se os arquivos de logo forem fornecidos.
+const clients = [
+    'GLOBO', 'DELL', 'CYRELA', 'CCR', 'NET', 'BRANRI',
+    'CHILLI BEANS', 'MELNICK', 'MARINA', 'IGUI', 'ATM',
 ];
 
 export default function ClientsSection() {
@@ -35,6 +31,26 @@ export default function ClientsSection() {
 
     return (
         <section className="clients-section" ref={sectionRef}>
+            {/* Faixa 1: Clientes (Esquerda) */}
+            <div className="marquee-container logos-marquee">
+                <div className="marquee-track">
+                    <div className="clients-text">
+                        {clients.map((name) => (
+                            <span key={name}>
+                                {name} <span className="asterisk">✳</span>
+                            </span>
+                        ))}
+                    </div>
+                    <div className="clients-text" aria-hidden="true">
+                        {clients.map((name) => (
+                            <span key={`${name}-dup`}>
+                                {name} <span className="asterisk">✳</span>
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             {/* Faixa 2: Serviços (Direita) */}
             <div className="marquee-container services-marquee">
                 <div className="marquee-track reverse">

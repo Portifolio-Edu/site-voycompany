@@ -5,13 +5,21 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Clientes reais da Voy (mesma prova social citada no Hero: "mesmo padrao
-// que ja atende Globo, Dell e Cyrela"). Lista em texto por garantia de
-// funcionamento; trocar por <img> usando .marquee-track img (ja existe no
-// CSS) se os arquivos de logo forem fornecidos.
+// Logos reais dos clientes da Voy (mesma prova social citada no Hero:
+// "mesmo padrao que ja atende Globo, Dell e Cyrela"). Arquivos em
+// /public/logos, recortados individualmente para rodar cada um separado
+// na marquee (nao um bloco unico).
 const clients = [
-    'GLOBO', 'DELL', 'CYRELA', 'CCR', 'NET', 'BRANRI',
-    'CHILLI BEANS', 'MELNICK', 'MARINA', 'IGUI', 'ATM',
+    { name: 'Globo', file: 'globo.png' },
+    { name: 'Melnick Even', file: 'melnickeven.png' },
+    { name: 'iGUi', file: 'igui.png' },
+    { name: 'Marina Park', file: 'marinapark.png' },
+    { name: 'Dell Technologies', file: 'dell.png' },
+    { name: 'Chilli Beans', file: 'chillibeans.png' },
+    { name: 'CCR ViaSul', file: 'ccrviasul.png' },
+    { name: 'Banrisul', file: 'banrisul.png' },
+    { name: 'Netshoes', file: 'netshoes.png' },
+    { name: 'Cyrela Goldsztein', file: 'cyrela.png' },
 ];
 
 export default function ClientsSection() {
@@ -34,18 +42,24 @@ export default function ClientsSection() {
             {/* Faixa 1: Clientes (Esquerda) */}
             <div className="marquee-container logos-marquee">
                 <div className="marquee-track">
-                    <div className="clients-text">
-                        {clients.map((name) => (
-                            <span key={name}>
-                                {name} <span className="asterisk">✳</span>
-                            </span>
+                    <div className="logos-track-inner">
+                        {clients.map((c) => (
+                            <img
+                                key={c.file}
+                                src={`/logos/${c.file}`}
+                                alt={c.name}
+                                loading="lazy"
+                            />
                         ))}
                     </div>
-                    <div className="clients-text" aria-hidden="true">
-                        {clients.map((name) => (
-                            <span key={`${name}-dup`}>
-                                {name} <span className="asterisk">✳</span>
-                            </span>
+                    <div className="logos-track-inner" aria-hidden="true">
+                        {clients.map((c) => (
+                            <img
+                                key={`${c.file}-dup`}
+                                src={`/logos/${c.file}`}
+                                alt=""
+                                loading="lazy"
+                            />
                         ))}
                     </div>
                 </div>

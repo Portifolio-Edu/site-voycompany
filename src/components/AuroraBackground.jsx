@@ -110,23 +110,33 @@ export default function AuroraBackground() {
     scene.add(mesh);
 
     let frameId;
-    let watchdogFrames = 0;
-    let watchdogDone = false;
-    const watchdogStart = performance.now();
+    // Watchdog seguro contra aba em segundo plano: mede apenas deltas
+    // entre frames CONSECUTIVOS ativos (delta > 250ms significa aba
+    // oculta/tela trancada e e descartado, pois RAF pausa nesses casos).
+    // So decide apos acumular 2s de tempo realmente ativo. Sem isso,
+    // trocar de aba durante o carregamento derrubava a aurora boa.
+    let wdLastFrame = 0;
+    let wdActiveTime = 0;
+    let wdActiveFrames = 0;
+    let wdDone = false;
     const animate = () => {
       frameId = requestAnimationFrame(animate);
       material.uniforms.iTime.value = performance.now() / 1000;
       renderer.render(scene, camera);
 
-      // Watchdog: mede o desempenho REAL nos primeiros segundos. Se o
-      // WebGL estiver rastejando (qualquer causa que a deteccao por nome
-      // nao pegou), troca para o fallback CSS em vez de parecer estatico.
-      if (!watchdogDone) {
-        watchdogFrames++;
-        const elapsed = performance.now() - watchdogStart;
-        if (elapsed >= 3000) {
-          watchdogDone = true;
-          const fps = (watchdogFrames / elapsed) * 1000;
+      if (!wdDone) {
+        const now = performance.now();
+        if (wdLastFrame > 0) {
+          const delta = now - wdLastFrame;
+          if (delta > 0 && delta <= 250) {
+            wdActiveTime += delta;
+            wdActiveFrames++;
+          }
+        }
+        wdLastFrame = now;
+        if (wdActiveTime >= 2000) {
+          wdDone = true;
+          const fps = (wdActiveFrames / wdActiveTime) * 1000;
           if (fps < 12) {
             cancelAnimationFrame(frameId);
             if (renderer.domElement.parentNode === container) container.removeChild(renderer.domElement);

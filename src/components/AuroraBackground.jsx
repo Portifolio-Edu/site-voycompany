@@ -32,7 +32,22 @@ export default function AuroraBackground() {
       renderer = new THREE.WebGLRenderer({ antialias: false });
       const gl = renderer.getContext();
       if (!gl || gl.isContextLost()) throw new Error('webgl context unavailable');
+
+      // WebGL por SOFTWARE (SwiftShader/llvmpipe): o contexto e valido,
+      // mas renderiza na CPU. Este shader (25 iteracoes de fbm por pixel,
+      // tela cheia) fica em ~1 frame a cada varios segundos nesse modo:
+      // parece um fundo estatico. Acontece quando a aceleracao de hardware
+      // do navegador esta desligada ou o driver da GPU foi bloqueado.
+      // Nesses casos o fallback CSS e melhor em tudo.
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      const rendererName = dbg
+        ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL))
+        : String(gl.getParameter(gl.RENDERER));
+      if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(rendererName)) {
+        throw new Error('software webgl: ' + rendererName);
+      }
     } catch (err) {
+      if (renderer) renderer.dispose();
       enableCssFallback();
       return;
     }
@@ -95,10 +110,33 @@ export default function AuroraBackground() {
     scene.add(mesh);
 
     let frameId;
+    let watchdogFrames = 0;
+    let watchdogDone = false;
+    const watchdogStart = performance.now();
     const animate = () => {
       frameId = requestAnimationFrame(animate);
       material.uniforms.iTime.value = performance.now() / 1000;
       renderer.render(scene, camera);
+
+      // Watchdog: mede o desempenho REAL nos primeiros segundos. Se o
+      // WebGL estiver rastejando (qualquer causa que a deteccao por nome
+      // nao pegou), troca para o fallback CSS em vez de parecer estatico.
+      if (!watchdogDone) {
+        watchdogFrames++;
+        const elapsed = performance.now() - watchdogStart;
+        if (elapsed >= 3000) {
+          watchdogDone = true;
+          const fps = (watchdogFrames / elapsed) * 1000;
+          if (fps < 12) {
+            cancelAnimationFrame(frameId);
+            if (renderer.domElement.parentNode === container) container.removeChild(renderer.domElement);
+            geometry.dispose();
+            material.dispose();
+            renderer.dispose();
+            enableCssFallback();
+          }
+        }
+      }
     };
     if (prefersReducedMotion) {
       material.uniforms.iTime.value = 8.0;

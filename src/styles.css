@@ -75,6 +75,15 @@ html {
     -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+    /* overflow-x apenas no body NAO impede o pan lateral por gesto no
+       Safari do iOS (peculiaridade conhecida do WebKit): o html tambem
+       precisa da regra, senao elementos que vazam da borda (astronauta
+       posicionado com right negativo) deixam o site "andar" pro lado
+       ao arrastar o dedo. */
+    overflow-x: hidden;
+}
+
 body {
     background-color: var(--bg-primary);
     color: var(--text-primary);

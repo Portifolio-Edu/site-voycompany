@@ -156,6 +156,60 @@ a, button { cursor: pointer;
     z-index: 0;
 }
 
+/* Aurora em CSS puro: assume automaticamente quando o WebGL nao esta
+   disponivel (aceleracao de hardware desligada, driver quebrado,
+   contexto perdido). Anima em qualquer navegador, sem GPU. */
+.bg-aurora-fallback {
+    overflow: hidden;
+    background: #020206;
+}
+
+.bg-aurora-fallback::before,
+.bg-aurora-fallback::after {
+    content: '';
+    position: absolute;
+    width: 120vmax;
+    height: 120vmax;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    will-change: transform;
+    pointer-events: none;
+}
+
+.bg-aurora-fallback::before {
+    background:
+        radial-gradient(closest-side, rgba(0, 255, 204, 0.16), transparent 65%),
+        radial-gradient(closest-side at 30% 40%, rgba(26, 24, 96, 0.55), transparent 70%);
+    animation: aurora-drift-a 26s ease-in-out infinite alternate;
+}
+
+.bg-aurora-fallback::after {
+    background:
+        radial-gradient(closest-side at 65% 60%, rgba(0, 140, 255, 0.12), transparent 60%),
+        radial-gradient(closest-side at 40% 30%, rgba(0, 255, 204, 0.08), transparent 65%);
+    animation: aurora-drift-b 34s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift-a {
+    0%   { transform: translate(-62%, -58%) scale(1) rotate(0deg); }
+    50%  { transform: translate(-40%, -46%) scale(1.18) rotate(12deg); }
+    100% { transform: translate(-55%, -38%) scale(0.95) rotate(-8deg); }
+}
+
+@keyframes aurora-drift-b {
+    0%   { transform: translate(-38%, -42%) scale(1.05) rotate(0deg); }
+    50%  { transform: translate(-58%, -55%) scale(0.9) rotate(-14deg); }
+    100% { transform: translate(-45%, -60%) scale(1.2) rotate(10deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bg-aurora-fallback::before,
+    .bg-aurora-fallback::after {
+        animation: none;
+    }
+}
+
 .bg-astronaut {
     z-index: 1;
 }

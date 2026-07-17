@@ -17,12 +17,38 @@ export default function AuroraBackground() {
     import('three').then((THREE) => {
       if (disposed) return;
 
+    // Fallback: se o WebGL nao estiver disponivel (aceleracao de hardware
+    // desligada, driver com problema, contexto perdido), ativa uma versao
+    // da aurora em CSS puro, que anima em qualquer navegador sem GPU.
+    const enableCssFallback = () => {
+      container.classList.add('bg-aurora-fallback');
+    };
+
+    let renderer;
+    try {
+      // powerPreference default: 'low-power' pede a GPU integrada em
+      // desktops com duas GPUs, cenario classico de contexto WebGL
+      // quebrado no Windows. Deixar o navegador escolher e mais robusto.
+      renderer = new THREE.WebGLRenderer({ antialias: false });
+      const gl = renderer.getContext();
+      if (!gl || gl.isContextLost()) throw new Error('webgl context unavailable');
+    } catch (err) {
+      enableCssFallback();
+      return;
+    }
+
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'low-power' });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
+
+    // Se o contexto morrer depois de criado (driver reiniciou, GPU
+    // suspensa), troca para o fallback CSS em vez de congelar num frame.
+    renderer.domElement.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      enableCssFallback();
+    });
 
     const material = new THREE.ShaderMaterial({
       uniforms: {
@@ -95,6 +121,9 @@ export default function AuroraBackground() {
         material.dispose();
         renderer.dispose();
       };
+    }).catch(() => {
+      // three nao carregou (rede, bloqueio): aurora CSS assume.
+      if (!disposed && container) container.classList.add('bg-aurora-fallback');
     });
 
     return () => {

@@ -1175,10 +1175,6 @@ a, button { cursor: pointer;
     .final-cta-title {
         font-size: clamp(1.8rem, 7vw, 2.5rem);
     }
-
-    .marquee-track {
-        gap: 50px;
-    }
 }
 
 /* Small Mobile */

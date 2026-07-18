@@ -26,15 +26,26 @@ export default function AuroraBackground() {
 
     let renderer;
     try {
-      // powerPreference default: 'low-power' pede a GPU integrada em
-      // desktops com duas GPUs, cenario classico de contexto WebGL
-      // quebrado no Windows. Deixar o navegador escolher e mais robusto.
-      renderer = new THREE.WebGLRenderer({ antialias: false });
+      // CORRIGIDO (18/07): o comentario antigo aqui dizia que o default
+      // do three.js e 'low-power' e que por isso seria mais seguro nao
+      // mexer. Isso estava errado: o default real e 'default', ou seja,
+      // quem decide e a heuristica do navegador/driver. Em notebook com
+      // GPU dupla (integrada + dedicada, cenario comum em desktop/laptop
+      // Windows) essa heuristica frequentemente cai pra GPU integrada
+      // pra canvas em segundo plano, exatamente o cenario que o comentario
+      // antigo queria evitar e acabou causando. Essa aurora roda 25
+      // iteracoes de fbm por pixel em tela cheia: numa GPU integrada isso
+      // segura FPS baixo (visivelmente truncado/nao fluido) mesmo sem
+      // disparar o watchdog de fallback (que so corta abaixo de 12fps).
+      // Pedir 'high-performance' explicitamente e o jeito documentado do
+      // WebGL de sinalizar pro navegador usar a GPU dedicada quando ela
+      // existir. Sem GPU dupla isso e no-op, nao tem lado ruim.
+      renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
       const gl = renderer.getContext();
       if (!gl || gl.isContextLost()) throw new Error('webgl context unavailable');
 
       // WebGL por SOFTWARE (SwiftShader/llvmpipe): o contexto e valido,
-      // mas renderiza na CPU. Este shader (25 iteracoes de fbm por pixel,
+      // mas renderiza na CPU. Este shader (22 iteracoes de fbm por pixel,
       // tela cheia) fica em ~1 frame a cada varios segundos nesse modo:
       // parece um fundo estatico. Acontece quando a aceleracao de hardware
       // do navegador esta desligada ou o driver da GPU foi bloqueado.
@@ -91,12 +102,19 @@ export default function AuroraBackground() {
                     vec2 shake = vec2(sin(iTime * 1.2) * 0.005, cos(iTime * 2.1) * 0.005);
                     vec2 p = ((gl_FragCoord.xy + shake * iResolution.xy) - iResolution.xy * 0.5) / iResolution.y * mat2(6.0, -4.0, 4.0, 6.0);
                     vec2 v; vec4 o = vec4(0.0); float f = 2.0 + fbm(p + vec2(iTime * 5.0, 0.0)) * 0.5;
-                    for (float i = 0.0; i < 25.0; i++) {
+                    /* CORRIGIDO (18/07): estava em 25 iteracoes. O componente irmao
+                       (voy-site/VoyTrafegoPago.jsx), que roda fluido, usa 22. Cada
+                       iteracao aqui faz 2 cos (posicao) + fbm completo (tailNoise) +
+                       3 trig na cor + 1 exp, entao as 3 iteracoes a mais nao sao
+                       custo marginal, sao ~13% a mais de chamada transcendental por
+                       pixel em tela cheia, todo frame. Voltando pra 22 pra tirar
+                       custo real de GPU sem mudar a paleta/formula de cor. */
+                    for (float i = 0.0; i < 22.0; i++) {
                         v = p + cos(i * i + (iTime + p.x * 0.08) * 0.025 + i * vec2(13.0, 11.0)) * 3.5 + vec2(sin(iTime * 3.0 + i) * 0.003, cos(iTime * 3.5 - i) * 0.003);
-                        float tailNoise = fbm(v + vec2(iTime * 0.5, i)) * 0.3 * (1.0 - (i / 25.0));
+                        float tailNoise = fbm(v + vec2(iTime * 0.5, i)) * 0.3 * (1.0 - (i / 22.0));
                         vec4 auroraColors = vec4(0.1 + 0.3 * sin(i * 0.2 + iTime * 0.4), 0.3 + 0.5 * cos(i * 0.3 + iTime * 0.5), 0.7 + 0.3 * sin(i * 0.4 + iTime * 0.3), 1.0);
                         vec4 currentContribution = auroraColors * exp(sin(i * i + iTime * 0.8)) / length(max(v, vec2(v.x * f * 0.015, v.y * 1.5)));
-                        float thinnessFactor = smoothstep(0.0, 1.0, i / 25.0) * 0.6;
+                        float thinnessFactor = smoothstep(0.0, 1.0, i / 22.0) * 0.6;
                         o += currentContribution * (1.0 + tailNoise * 0.8) * thinnessFactor;
                     }
                     o = tanh(pow(o / 80.0, vec4(1.6)));

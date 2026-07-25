@@ -4,7 +4,6 @@ import { useChatWidget } from '../hooks/useChatWidget';
 
 // TODO: ajustar título e saudação junto com o prompt do agente no n8n
 const TITLE = 'VOY // Transmissão';
-const GREETING = 'Sinal recebido. Em que posso ajudar?';
 
 export default function ChatWidget() {
     const { messages, isOpen, isTyping, sendMessage, close, toggle } = useChatWidget();
@@ -83,9 +82,6 @@ export default function ChatWidget() {
                 </div>
 
                 <div className="chat-panel-messages" ref={listRef}>
-                    {messages.length === 0 && (
-                        <div className="chat-bubble chat-bubble-agent">{GREETING}</div>
-                    )}
                     {messages.map((m) => (
                         <div key={m.id} className={`chat-bubble chat-bubble-${m.role}`}>
                             {m.text}
